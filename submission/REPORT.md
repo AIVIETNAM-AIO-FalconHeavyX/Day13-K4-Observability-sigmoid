@@ -7,6 +7,7 @@
 - Commit SHA cuối:
 - Thành viên và vai trò:
   - Nguyễn Hoàng Long (`2A202601134`) — Member 3: Dashboard, SLO & Alerts
+  - Nguyễn Trọng Đăng Khoa (`2A202601964`) — Member 1: Logging & PII
 
 ## 2. Kết quả kỹ thuật
 
@@ -68,3 +69,5 @@ Với mỗi thành viên, ghi rõ nhiệm vụ và link commit/PR tương ứng.
 | Thành viên | Phần việc | Commit/PR | Điều đã học |
 |---|---|---|---|
 | Nguyễn Hoàng Long (`2A202601134`) | Dashboard 6 panel, SLO K4, alert rules, runbooks và evidence runtime | `bf1e225` | Dùng Metrics → Traces → Logs; đặt alert theo triệu chứng/SLO và kiểm chứng dashboard bằng incident. |
+  
+| Nguyễn Trọng Đăng Khoa (`2A202601964`) | Logging & PII: correlation ID middleware, structured JSON logging, recursive PII redaction, request-context enrichment và evidence validation | `1494368`, `667f47e` | Bảo vệ dữ liệu nhạy cảm bằng hash/redaction và dùng correlation ID để nối logs với traces. |
