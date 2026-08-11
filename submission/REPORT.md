@@ -1,69 +1,64 @@
-# Báo cáo Day 13 Observability
+# Day 13 Observability Report
 
-## 1. Thông tin nhóm
+## 1. Team information
 
-- Tên nhóm:
-- Repository URL:
-- Commit SHA cuối:
-- Thành viên và vai trò:
-  - Nguyễn Hoàng Long (`2A202601134`) — Member 3: Dashboard, SLO & Alerts
+- Cohort: K4
+- Challenge ID: `day13-k4-observability-v1`
+- Repository URL: `https://github.com/AIVIETNAM-AIO-FalconHeavyX/Day13-K4-Observability-sigmoid`
+- Members: Nguyen Hoang Long (`2A202601134`) - Member 3; Member 2 - Tracing & Prompt Versioning Specialist.
 
-## 2. Kết quả kỹ thuật
+## 2. Technical results
 
-- Điểm `validate_logs.py`:
-- Tổng số traces:
-- Số PII leak còn lại:
-- Link/đường dẫn dashboard:
+- `validate_logs.py`: 30/100 estimate; PII detection passed, but existing API logs are missing correlation/enrichment fields.
+- Langfuse traces collected: 11 prompt-version traces plus 5 challenge traces.
+- PII leaks detected: 0.
+- `validate_dashboard.py`: valid, 6/6 panels.
+- Dashboard URL: `https://jp.cloud.langfuse.com/project/cmsocubf300bwad0d4tj9avkf`
 
-## 3. Logging và tracing
+## 3. Logging and tracing
 
-- Evidence correlation ID:
-- Evidence PII redaction:
-- Evidence trace waterfall:
-- Giải thích một span đáng chú ý:
+- Trace evidence: `evidence/trace_waterfall.png`.
+- Prompt metadata evidence: `evidence/label_trace_baseline.png` and `evidence/label_trace_candidate.png`.
+- Challenge trace `21615682c851a6b8fc7144356dac5b9c` has observation `ab1d35d69a408b91` lasting about 3170ms.
 
 ## 4. Prompt versioning
 
-- Prompt name:
-- Version/label baseline:
-- Version/label candidate:
-- Trace ID của mỗi version:
-- Bằng chứng đổi label hoặc rollback:
+- Prompt name: `day13-chat`
+- Baseline: version 1, labels `baseline`, `production`
+- Candidate: version 2, label `candidate`; added `Answer concisely and professionally.`
+- Baseline trace: `1036cd5857573bd6799c3da855a07068`
+- Candidate trace: `eaa56ded66e95456619ddea312cc8ce4`
+- Production moved to v2: `aab4455e54185f9afb6578a83b899cf2`
+- Production rollback to v1: `772428b3f868a93b5b9bce4d9dbb90a6`
+- Full trace list: `evidence/trace_ids.txt`
+- Evidence: `evidence/prompt_versions.png`, `evidence/rollback_evidence.png`
 
-## 5. Dashboard, SLO và alerts
+## 5. Dashboard, SLO and alerts
 
-- Kết quả `validate_dashboard.py`: `HỢP LỆ: 6/6 panel có trong dashboard contract.`
-- Dashboard runtime: Streamlit đọc `data/logs.jsonl`, dùng time range 60 phút và tự refresh 30 giây. Sáu panel gồm latency P50/P95/P99, traffic, error rate/breakdown, cost, input/output tokens và quality proxy.
-- Evidence dashboard baseline: [`evidence/dashboard_screenshot.png`](evidence/dashboard_screenshot.png)
-- Evidence dashboard khi thử `rag_slow`: [`evidence/incident_response.png`](evidence/incident_response.png)
-- Evidence dashboard challenge K4: [`evidence/challenge_dashboard.png`](evidence/challenge_dashboard.png)
-- Evidence validator: [`evidence/dashboard_validation.txt`](evidence/dashboard_validation.txt)
-- SLO đã chọn và lý do:
-  - `latency_p95_ms <= 2000`, target 99.5%: dùng ngưỡng nghiêm ngặt từ challenge K4 `day13-k4-observability-v1`.
-  - `error_rate_pct <= 2`, target 99.0%: giới hạn tỷ lệ request thất bại ảnh hưởng trực tiếp người dùng.
-  - `daily_cost_usd <= 2.5`: kiểm soát ngân sách của lab.
-  - `quality_score_avg >= 0.75`, target 95.0%: ngăn tối ưu latency/cost làm giảm chất lượng tối thiểu.
-- Alert rules:
-  - `HighLatencyAlert`: P95 lớn hơn 2000 ms trong 5 phút, severity warning.
-  - `HighErrorRateAlert`: error rate lớn hơn 2% trong 3 phút, severity critical.
-  - `CostBudgetAlert`: cost lớn hơn 2.5 USD trong 1 giờ, severity warning.
-- Runbook: [`../docs/alerts.md`](../docs/alerts.md); evidence tại [`evidence/runbook_example.png`](evidence/runbook_example.png).
-- Kiểm thử runtime: baseline P95 `1179 ms`; khi bật `rag_slow`, dashboard ghi nhận P95 `3618 ms`, vượt ngưỡng K4 2000 ms. Incident được tắt sau kiểm thử.
+- Dashboard contract: `validate_dashboard.py` passed with 6/6 panels.
+- Dashboard runtime reads `data/logs.jsonl`, refreshes every 30 seconds, and includes latency, traffic, errors, cost, tokens, and quality panels.
+- SLO: `latency_p95_ms <= 2000`; this is the strict K4 challenge threshold.
+- Dashboard evidence: `evidence/dashboard_screenshot.png`, `evidence/incident_response.png`, `evidence/challenge_dashboard.png`, and `evidence/dashboard_validation.txt`.
+- Alerts/runbook: `docs/alerts.md` and `evidence/runbook_example.png`.
 
-## 6. Điều tra challenge
+## 6. Challenge investigation
 
-- Challenge ID:
-- Triệu chứng từ metrics:
-- Trace ID liên quan:
-- Log line/correlation ID liên quan:
-- Root cause:
-- Fix action:
-- Preventive measure:
+- Incident: `rag_slow`
+- Symptom: challenge requests measured 4653-4703ms; P50 4657ms and P95/P99 4703ms, all above 2000ms.
+- Challenge traces:
+  - `21615682c851a6b8fc7144356dac5b9c` (`k4-challenge-s01`)
+  - `7476a5ac6e9ea8a29cc8ea9548297163` (`k4-challenge-s02`)
+  - `edf8b1dd920dc68b13b4a936e539fd49` (`k4-challenge-s03`)
+  - `81361adf2d6794bce5b464166f2cbbfa` (`k4-challenge-s04`)
+  - `64e3b7bd497bd2ad55aa4b1be86bc192` (`k4-challenge-s05`)
+- Log evidence: `data/logs.jsonl`, response lines 19-27.
+- Root cause: `app/mock_rag.py` sleeps for 2.5 seconds whenever `STATE["rag_slow"]` is enabled, directly delaying retrieval.
+- Fix: add retrieval timeout, fallback, and cache; remove the blocking delay in production.
+- Prevention: instrument retrieval as its own span and alert when P95 exceeds 2000ms.
 
-## 7. Đóng góp cá nhân
+## 7. Individual contributions
 
-Với mỗi thành viên, ghi rõ nhiệm vụ và link commit/PR tương ứng.
-
-| Thành viên | Phần việc | Commit/PR | Điều đã học |
+| Member | Work | Commit/Evidence | Lesson |
 |---|---|---|---|
-| Nguyễn Hoàng Long (`2A202601134`) | Dashboard 6 panel, SLO K4, alert rules, runbooks và evidence runtime | `bf1e225` | Dùng Metrics → Traces → Logs; đặt alert theo triệu chứng/SLO và kiểm chứng dashboard bằng incident. |
+| Nguyen Hoang Long (`2A202601134`) | Dashboard panels, K4 SLO, alerts, runbooks, and runtime evidence | `bf1e225` | Connect metrics, traces, and logs using symptom-to-root-cause evidence. |
+| Member 2 | Prompt v1/v2, label changes, rollback, trace IDs, and `rag_slow` investigation | `evidence/trace_ids.txt` and prompt/trace screenshots | Prompt labels enable safe version selection and rollback. |
