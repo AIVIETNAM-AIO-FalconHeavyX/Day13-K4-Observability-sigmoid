@@ -1,19 +1,19 @@
 alerts:
-  - name: TODO_alert_1
-    severity: TODO
-    condition: TODO
+  - name: HighLatencyAlert
+    severity: warning
+    condition: "latency_p95_ms > 2000 for 5m"
     type: symptom-based
-    owner: TODO
+    owner: platform-team
     runbook: docs/alerts.md#alert-1
-  - name: TODO_alert_2
-    severity: TODO
-    condition: TODO
+  - name: HighErrorRateAlert
+    severity: critical
+    condition: "error_rate_pct > 2 for 3m"
     type: symptom-based
-    owner: TODO
+    owner: platform-team
     runbook: docs/alerts.md#alert-2
-  - name: TODO_alert_3
-    severity: TODO
-    condition: TODO
+  - name: CostBudgetAlert
+    severity: warning
+    condition: "cost_usd > 2.5 for 1h"
     type: symptom-based
-    owner: TODO
+    owner: finance-team
     runbook: docs/alerts.md#alert-3
