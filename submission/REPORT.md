@@ -6,6 +6,7 @@
 - Repository URL:
 - Commit SHA cuối:
 - Thành viên và vai trò:
+  - Nguyễn Hoàng Long (`2A202601134`) — Member 3: Dashboard, SLO & Alerts
 
 ## 2. Kết quả kỹ thuật
 
@@ -65,4 +66,4 @@ Với mỗi thành viên, ghi rõ nhiệm vụ và link commit/PR tương ứng.
 
 | Thành viên | Phần việc | Commit/PR | Điều đã học |
 |---|---|---|---|
-| Member 3 | Dashboard 6 panel, SLO K4, alert rules, runbooks và evidence runtime | Commit Member 3 | Dùng Metrics → Traces → Logs; đặt alert theo triệu chứng/SLO và kiểm chứng dashboard bằng incident. |
+| Nguyễn Hoàng Long (`2A202601134`) | Dashboard 6 panel, SLO K4, alert rules, runbooks và evidence runtime | `bf1e225` | Dùng Metrics → Traces → Logs; đặt alert theo triệu chứng/SLO và kiểm chứng dashboard bằng incident. |
