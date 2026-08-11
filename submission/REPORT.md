@@ -5,7 +5,10 @@
 - Cohort: K4
 - Challenge ID: `day13-k4-observability-v1`
 - Repository URL: `https://github.com/AIVIETNAM-AIO-FalconHeavyX/Day13-K4-Observability-sigmoid`
-- Members: Nguyen Hoang Long (`2A202601134`) - Member 3; Member 2 - Tracing & Prompt Versioning Specialist.
+- Members and roles:
+  - Nguyễn Hoàng Long (`2A202601134`) — Member 3: Dashboard, SLO & Alerts
+  - Nguyễn Trọng Đăng Khoa (`2A202601964`) — Member 1: Logging & PII
+  - Member 2 — Tracing & Prompt Versioning Specialist
 
 ## 2. Technical results
 
@@ -64,5 +67,6 @@
 
 | Member | Work | Commit/Evidence | Lesson |
 |---|---|---|---|
-| Nguyen Hoang Long (`2A202601134`) | Dashboard panels, K4 SLO, alerts, runbooks, and runtime evidence | `bf1e225` | Connect metrics, traces, and logs using symptom-to-root-cause evidence. |
+| Nguyễn Hoàng Long (`2A202601134`) | Dashboard panels, K4 SLO, alerts, runbooks, and runtime evidence | `bf1e225` | Connect metrics, traces, and logs using symptom-to-root-cause evidence. |
+| Nguyễn Trọng Đăng Khoa (`2A202601964`) | Logging & PII: correlation ID middleware, structured JSON logging, recursive PII redaction, request-context enrichment, and evidence validation | `1494368`, `667f47e` | Protect sensitive data with hashing/redaction and connect logs to traces with correlation IDs. |
 | Member 2 | Prompt v1/v2, label changes, rollback, trace IDs, and `rag_slow` investigation | `evidence/trace_ids.txt` and prompt/trace screenshots | Prompt labels enable safe version selection and rollback. |
