@@ -1,0 +1,57 @@
+# K4 Challenge - Trace Investigation
+
+## Note on Traces
+
+Tracing was not enabled during challenge investigation due to Langfuse SDK connection issue.
+However, the investigation was completed using metrics and logs evidence.
+
+## Challenge Configuration
+- Challenge ID: day13-k4-observability-v1
+- Cohort: K4
+- Incident: rag_slow
+- Affected Feature: monitoring
+- Latency Threshold: 2000ms
+
+## Latency Evidence from Metrics
+
+### Before Incident (Baseline)
+- P50: 150.0ms
+- P95: 151.0ms
+- P99: 151.0ms
+- Status: NORMAL (below 2000ms threshold)
+
+### During Incident
+- P50: 2650.0ms
+- P95: 2651.0ms
+- P99: 2651.0ms
+- Status: EXCEEDED (above 2000ms threshold)
+
+### After Fix
+- Latency returned to ~150-770ms range
+- Status: RECOVERED
+
+## Investigation Methods Used
+
+1. **Metrics Analysis** (/metrics endpoint)
+   - P95 latency exceeded 2000ms threshold
+   - Confirmed latency spike after incident injection
+
+2. **Log Correlation** (data/logs.jsonl)
+   - Found high latency entries (latency_ms: 2650-2651)
+   - Correlated with incident_enabled event at 10:33:27
+   - Baseline latency was 150ms before incident
+
+## Root Cause
+
+The rag_slow incident adds time.sleep(2.5) in app/mock_rag.py:
+- Normal latency: ~150ms
+- With rag_slow: ~2650ms (150ms + 2500ms)
+
+This confirms rag_slow is the root cause of the high latency.
+
+## Fix
+
+Disabled rag_slow incident via:
+curl -X POST http://127.0.0.1:8000/incidents/rag_slow/disable
+
+Recovery confirmed with load test showing normal latency.
