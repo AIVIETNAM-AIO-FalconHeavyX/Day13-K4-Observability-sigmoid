@@ -1,0 +1,12 @@
+Trace ID                              | Prompt Label | Version | Session
+772428b3f868a93b5b9bce4d9dbb90a6      | production   | 1       | production-rollback
+aab4455e54185f9afb6578a83b899cf2      | production   | 2       | production-0
+10c4ca3816444b12775d4cbf2c15f39b      | candidate    | 2       | candidate-3
+b1f919b856843fde2169297aa7e7503e      | candidate    | 2       | candidate-2
+03b91c7991bbadd9117d919a96f951c3      | candidate    | 2       | candidate-1
+eaa56ded66e95456619ddea312cc8ce4      | candidate    | 2       | candidate-0
+1a8e58024fd99efea35a5b80f6ea775b      | baseline     | 1       | baseline-3
+8f5aafb88f28ca87c62935255cabcfb8      | baseline     | 1       | baseline-2
+0874339425eb2bf08702a14a0f66fd3a      | baseline     | 1       | baseline-1
+1036cd5857573bd6799c3da855a07068      | baseline     | 1       | baseline-0
+e55932e79be369cf09de09dd7a29cbe7      | baseline     | 1       | s-baseline
