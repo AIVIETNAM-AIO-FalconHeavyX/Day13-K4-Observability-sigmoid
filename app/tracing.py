@@ -17,10 +17,16 @@ except ImportError:  # pragma: no cover - chỉ dùng khi chưa cài requirement
         return decorator
 
     class _DummyClient:
+        def update_current_span(self, **kwargs: Any) -> None:
+            return None
+
         def update_current_trace(self, **kwargs: Any) -> None:
             return None
 
         def update_current_generation(self, **kwargs: Any) -> None:
+            return None
+
+        def flush(self) -> None:
             return None
 
     def get_client():
@@ -32,6 +38,17 @@ def get_langfuse_client():
 
 
 def tracing_enabled() -> bool:
-    return LANGFUSE_SDK_AVAILABLE and bool(
+    return LANGFUSE_SDK_AVAILABLE and os.getenv("LANGFUSE_TRACING_ENABLED", "true").lower() not in {
+        "0",
+        "false",
+        "no",
+        "off",
+    } and bool(
         os.getenv("LANGFUSE_PUBLIC_KEY") and os.getenv("LANGFUSE_SECRET_KEY")
     )
+
+
+def flush_traces() -> None:
+    """Flush the async SDK queue when the process is shutting down."""
+    if LANGFUSE_SDK_AVAILABLE:
+        get_langfuse_client().flush()

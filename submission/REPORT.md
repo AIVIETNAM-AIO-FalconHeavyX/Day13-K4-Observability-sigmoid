@@ -9,7 +9,9 @@
 
 ## 2. Technical results
 
-- `validate_logs.py`: 30/100 estimate; PII detection passed, but existing API logs are missing correlation/enrichment fields.
+- Điểm `validate_logs.py`: 100/100 (76 records; 0 missing required fields; 0 missing enrichment; 0 PII leaks; 37 unique correlation IDs)
+- Tổng số traces:
+- Số PII leak còn lại: 0
 - Langfuse traces collected: 11 prompt-version traces plus 5 challenge traces.
 - PII leaks detected: 0.
 - `validate_dashboard.py`: valid, 6/6 panels.
@@ -17,9 +19,11 @@
 
 ## 3. Logging and tracing
 
-- Trace evidence: `evidence/trace_waterfall.png`.
-- Prompt metadata evidence: `evidence/label_trace_baseline.png` and `evidence/label_trace_candidate.png`.
-- Challenge trace `21615682c851a6b8fc7144356dac5b9c` has observation `ab1d35d69a408b91` lasting about 3170ms.
+- Evidence correlation ID: `submission/evidence/checkpoint-1-correlation-headers.json` (2 requests, IDs `req-c5ea9abe` và `req-32414712`, response headers khớp response body)
+- Evidence PII redaction: `submission/evidence/checkpoint-1-scrubbed-log-sample.json` và `submission/evidence/checkpoint-1-validate-logs.txt`
+- Cách bảo vệ: middleware validate/tao `req-<8-hex>` và bind context cho toàn request; `user_id` chỉ ghi SHA-256 12 ký tự đầu. `summarize_text()` scrub preview, còn `scrub_event` scrub đệ quy payload và text trước `JsonlFileProcessor` render/ghi JSONL.
+- Evidence trace waterfall: Langfuse trace waterfall (chat-response -> retrieve-context -> generate-response) được tạo bởi `app/agent.py`; xác thực trace cần restart API sau khi cập nhật endpoint regional trong `.env`.
+- Giải thích một span đáng chú ý: `retrieve-context` là span RAG; trong challenge `rag_slow`, span này chứa độ trễ 2.5 giây từ `app/mock_rag.py:17-18`.
 
 ## 4. Prompt versioning
 
