@@ -1,99 +1,68 @@
-# Báo cáo Day 13 Observability
+# Day 13 Observability Report
 
-## 1. Thông tin nhóm
+## 1. Team information
 
-- Tên nhóm: K4-Sigmoid
-- Repository URL: https://github.com/AIVIETNAM-AIO-FalconHeavyX/Day13-K4-Observability-sigmoid
-- Commit SHA cuối: 5ba64725aaf0b5b4d51c28772973373d98d0f149
-- Thành viên và vai trò:
-  | Thành viên | Vai trò |
-  |------------|---------|
-  | Member 1 | Logging & PII |
-  | Member 2 | Tracing & Prompt Version |
-  | Member 3 | Dashboard, SLO & Alerts |
-  | Member 4 | Incident Investigation & Report |
+- Cohort: K4
+- Challenge ID: `day13-k4-observability-v1`
+- Repository URL: `https://github.com/AIVIETNAM-AIO-FalconHeavyX/Day13-K4-Observability-sigmoid`
+- Members: Nguyen Hoang Long (`2A202601134`) - Member 3; Member 2 - Tracing & Prompt Versioning Specialist.
 
-## 2. Kết quả kỹ thuật
+## 2. Technical results
 
-- Điểm `validate_logs.py`: 30/100 (middleware needs correlation ID fix)
-- Tổng số traces: 0 (Langfuse tracing not connected during challenge)
-- Số PII leak còn lại: 0 (PII scrubbing PASSED)
-- Link/đường dẫn dashboard: submission/evidence/ (local files)
-- Kết quả `validate_dashboard.py`: **6/6 panel HOP LE**
+- Điểm `validate_logs.py`: 100/100 (76 records; 0 missing required fields; 0 missing enrichment; 0 PII leaks; 37 unique correlation IDs)
+- Tổng số traces:
+- Số PII leak còn lại: 0
+- Langfuse traces collected: 11 prompt-version traces plus 5 challenge traces.
+- PII leaks detected: 0.
+- `validate_dashboard.py`: valid, 6/6 panels.
+- Dashboard URL: `https://jp.cloud.langfuse.com/project/cmsocubf300bwad0d4tj9avkf`
 
-## 3. Logging và tracing
+## 3. Logging and tracing
 
-- Evidence correlation ID: submission/evidence/log_evidence.txt
-- Evidence PII redaction: Submission/evidence/pii_redaction.png (chua co - can them)
-- Evidence trace waterfall: submission/evidence/trace_waterfall.png (chua co - can them)
-- Giải thích một span đáng chú ý: Due to middleware not being fixed, correlation IDs show as "MISSING". Logs show clear latency patterns: baseline ~150ms, with rag_slow incident ~2650ms.
+- Evidence correlation ID: `submission/evidence/checkpoint-1-correlation-headers.json` (2 requests, IDs `req-c5ea9abe` và `req-32414712`, response headers khớp response body)
+- Evidence PII redaction: `submission/evidence/checkpoint-1-scrubbed-log-sample.json` và `submission/evidence/checkpoint-1-validate-logs.txt`
+- Cách bảo vệ: middleware validate/tao `req-<8-hex>` và bind context cho toàn request; `user_id` chỉ ghi SHA-256 12 ký tự đầu. `summarize_text()` scrub preview, còn `scrub_event` scrub đệ quy payload và text trước `JsonlFileProcessor` render/ghi JSONL.
+- Evidence trace waterfall: Langfuse trace waterfall (chat-response -> retrieve-context -> generate-response) được tạo bởi `app/agent.py`; xác thực trace cần restart API sau khi cập nhật endpoint regional trong `.env`.
+- Giải thích một span đáng chú ý: `retrieve-context` là span RAG; trong challenge `rag_slow`, span này chứa độ trễ 2.5 giây từ `app/mock_rag.py:17-18`.
 
 ## 4. Prompt versioning
 
-- Prompt name: day13-chat
-- Version/label baseline: v1, labels: baseline, production
-- Version/label candidate: v2, label: candidate
-- Trace ID của mỗi version: (Langfuse not connected during challenge)
-- Bằng chứng đổi label hoặc rollback: submission/evidence/label_change.png (chua co - can them)
+- Prompt name: `day13-chat`
+- Baseline: version 1, labels `baseline`, `production`
+- Candidate: version 2, label `candidate`; added `Answer concisely and professionally.`
+- Baseline trace: `1036cd5857573bd6799c3da855a07068`
+- Candidate trace: `eaa56ded66e95456619ddea312cc8ce4`
+- Production moved to v2: `aab4455e54185f9afb6578a83b899cf2`
+- Production rollback to v1: `772428b3f868a93b5b9bce4d9dbb90a6`
+- Full trace list: `evidence/trace_ids.txt`
+- Evidence: `evidence/prompt_versions.png`, `evidence/rollback_evidence.png`
 
-## 5. Dashboard, SLO và alerts
+## 5. Dashboard, SLO and alerts
 
-- Kết quả `validate_dashboard.py`: HOP LE: 6/6 panel
-- Evidence dashboard: submission/evidence/dashboard_screenshot.png (chua co - can them)
-- SLO đã chọn:
-  - latency_p95_ms: **2000ms** (K4-specific threshold from challenge.json)
-  - error_rate_pct: 2%
-  - daily_cost_usd: 2.5
-  - quality_score_avg: 0.75
-- Alert rules:
-  1. P95 latency > 2000ms (K4 threshold)
-  2. Error rate > 2%
-  3. Quality score < 0.75
+- Dashboard contract: `validate_dashboard.py` passed with 6/6 panels.
+- Dashboard runtime reads `data/logs.jsonl`, refreshes every 30 seconds, and includes latency, traffic, errors, cost, tokens, and quality panels.
+- SLO: `latency_p95_ms <= 2000`; this is the strict K4 challenge threshold.
+- Dashboard evidence: `evidence/dashboard_screenshot.png`, `evidence/incident_response.png`, `evidence/challenge_dashboard.png`, and `evidence/dashboard_validation.txt`.
+- Alerts/runbook: `docs/alerts.md` and `evidence/runbook_example.png`.
 
-## 6. Điều tra challenge
+## 6. Challenge investigation
 
-- **Challenge ID**: day13-k4-observability-v1
-- **Cohort**: K4
-- **Triệu chứng từ metrics**: P95 latency = 2651ms (EXCEEDS 2000ms threshold)
-- **Trace ID liên quan**: Tracing not available (Langfuse not connected)
-- **Log line/correlation ID liên quan**:
-  - Baseline: `latency_ms: 150` at 10:32:18
-  - Incident enabled: `event: incident_enabled` at 10:33:27
-  - High latency: `latency_ms: 2650-2651` at 10:34:01+
-- **Root cause**: rag_slow incident adds `time.sleep(2.5)` in app/mock_rag.py:17-18, causing RAG retrieval to take 2.5 seconds longer
-- **Fix action**: Disabled rag_slow incident via `POST /incidents/rag_slow/disable`
-- **Preventive measure**:
-  1. Add P95 latency alert at 2000ms threshold
-  2. Implement RAG timeout monitoring
-  3. Add automatic incident detection when P95 > 2000ms
+- Incident: `rag_slow`
+- Symptom: challenge requests measured 4653-4703ms; P50 4657ms and P95/P99 4703ms, all above 2000ms.
+- Challenge traces:
+  - `21615682c851a6b8fc7144356dac5b9c` (`k4-challenge-s01`)
+  - `7476a5ac6e9ea8a29cc8ea9548297163` (`k4-challenge-s02`)
+  - `edf8b1dd920dc68b13b4a936e539fd49` (`k4-challenge-s03`)
+  - `81361adf2d6794bce5b464166f2cbbfa` (`k4-challenge-s04`)
+  - `64e3b7bd497bd2ad55aa4b1be86bc192` (`k4-challenge-s05`)
+- Log evidence: `data/logs.jsonl`, response lines 19-27.
+- Root cause: `app/mock_rag.py` sleeps for 2.5 seconds whenever `STATE["rag_slow"]` is enabled, directly delaying retrieval.
+- Fix: add retrieval timeout, fallback, and cache; remove the blocking delay in production.
+- Prevention: instrument retrieval as its own span and alert when P95 exceeds 2000ms.
 
-## 7. Đóng góp cá nhân
+## 7. Individual contributions
 
-| Thành viên | Phần việc | Commit/PR | Điều đã học |
-|------------|-----------|-----------|-------------|
-| Member 1 | Logging & PII | aff4f19 | Vietnamese phone PII detection |
-| Member 2 | Tracing & Prompt | 4013676 | Langfuse prompt versioning |
-| Member 3 | Dashboard & Alerts | 4013676 | 6-panel dashboard setup |
-| Member 4 | Challenge Investigation | 5ba6472 | rag_slow root cause analysis |
-
----
-
-## Evidence Files
-
-| File | Description |
-|------|-------------|
-| challenge_investigation.md | Full K4 challenge investigation |
-| challenge_metrics_before.txt | Baseline metrics (P95: 151ms) |
-| challenge_metrics_after.txt | Metrics during incident (P95: 2651ms) |
-| log_evidence.txt | Log lines showing latency spike |
-| trace_ids_challenge.txt | Challenge investigation summary |
-
----
-
-## Lab Completion Status
-
-- [x] Checkpoint 0: Setup
-- [x] Checkpoint 1: Logging & PII (30/100 - needs correlation ID fix)
-- [x] Checkpoint 2: Tracing & Dashboard (6/6 panel validated)
-- [x] Checkpoint 3: Challenge (rag_slow investigated, fixed)
-- [x] Final: Report completed
+| Member | Work | Commit/Evidence | Lesson |
+|---|---|---|---|
+| Nguyen Hoang Long (`2A202601134`) | Dashboard panels, K4 SLO, alerts, runbooks, and runtime evidence | `bf1e225` | Connect metrics, traces, and logs using symptom-to-root-cause evidence. |
+| Member 2 | Prompt v1/v2, label changes, rollback, trace IDs, and `rag_slow` investigation | `evidence/trace_ids.txt` and prompt/trace screenshots | Prompt labels enable safe version selection and rollback. |

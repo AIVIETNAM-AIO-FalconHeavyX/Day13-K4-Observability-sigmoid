@@ -37,11 +37,17 @@ cp .env.example .env
 LANGFUSE_PUBLIC_KEY=
 LANGFUSE_SECRET_KEY=
 LANGFUSE_HOST=https://cloud.langfuse.com
+LANGFUSE_TRACING_ENABLED=true
 LANGFUSE_PROMPT_NAME=day13-chat
 LANGFUSE_PROMPT_LABEL=production
 ```
 
 Không commit `.env`. Nếu chưa có key, app vẫn chạy bằng prompt local; bạn vẫn làm được log, metrics và public tests nhưng chưa có evidence trace/prompt version.
+
+The app emits one `chat-response` trace per chat turn. Each trace includes a
+`retrieve-context` retriever observation and a `generate-response` generation,
+with the user ID hashed and message/answer content scrubbed before it is sent.
+Set `LANGFUSE_TRACING_ENABLED=false` to disable exporting traces explicitly.
 
 ## 3. Tùy chọn: chạy Langfuse local bằng Docker Compose
 

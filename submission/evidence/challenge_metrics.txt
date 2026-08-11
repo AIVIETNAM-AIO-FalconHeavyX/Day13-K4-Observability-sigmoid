@@ -1,0 +1,31 @@
+Challenge ID: day13-k4-observability-v1
+Cohort: K4
+Incident: rag_slow
+Affected feature: monitoring
+Latency threshold: 2000 ms
+
+Official challenge load test (5 requests, concurrency 5):
+- HTTP responses: 5/5 status 200
+- Client-observed latency: 14403.0, 18012.3, 18013.2, 18012.5, 18013.1 ms
+- Returned correlation_id: MISSING for 5/5 responses
+
+/metrics snapshot:
+- traffic: 5
+- latency_p50: 3604.0 ms
+- latency_p95: 3628.0 ms
+- latency_p99: 3628.0 ms
+- total_cost_usd: 0.0122
+- tokens_in_total: 175
+- tokens_out_total: 781
+- error_breakdown: {}
+- quality_avg: 0.84
+
+Conclusion supported by metrics:
+- P95 exceeded the strict K4 threshold by 1628 ms (81.4%).
+- This is a latency degradation without HTTP/application errors.
+
+Evidence limitation at capture time:
+- Logging validator: 30/100; zero unique correlation IDs.
+- Official response logs had no correlation_id, trace_id, feature, or session_id.
+- Langfuse export/fetch returned HTTP 401, so a trace ID and slow-span screenshot could not be verified.
+- Root cause must remain a hypothesis until Member 1/2 restore correlation metadata and Langfuse access.

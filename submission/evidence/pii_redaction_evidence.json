@@ -1,0 +1,39 @@
+{
+  "assertion": "PII is redacted before JSONL persistence",
+  "redacted_examples": [
+    "[REDACTED_EMAIL]",
+    "[REDACTED_PHONE_VN]"
+  ],
+  "records": [
+    {
+      "service": "api",
+      "payload": {
+        "message_preview": "Please explain logging for [REDACTED_EMAIL], phone [REDACTED_PHONE_VN], card [RE..."
+      },
+      "event": "request_received",
+      "model": "claude-sonnet-4-5",
+      "feature": "qa",
+      "env": "dev",
+      "correlation_id": "req-c5ea9abe",
+      "session_id": "session-alpha",
+      "user_id_hash": "bf86c7e3f0e3",
+      "level": "info",
+      "ts": "2026-08-11T08:07:49.176399Z"
+    },
+    {
+      "service": "api",
+      "payload": {
+        "message_preview": "Please explain logging for [REDACTED_EMAIL], phone [REDACTED_PHONE_VN], card [RE..."
+      },
+      "event": "request_received",
+      "model": "claude-sonnet-4-5",
+      "feature": "qa",
+      "env": "dev",
+      "correlation_id": "req-32414712",
+      "session_id": "session-beta",
+      "user_id_hash": "b6d819101017",
+      "level": "info",
+      "ts": "2026-08-11T08:07:49.335342Z"
+    }
+  ]
+}
